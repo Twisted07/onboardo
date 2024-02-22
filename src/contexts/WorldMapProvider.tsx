@@ -32,7 +32,18 @@ function WorldMapProvider({ children }: { children: React.ReactNode }) {
     setSelectedCountries(prevCountries => (
       prevCountries.concat(countriesName.filter(i => !prevCountries.includes(i))))
     )
+    // console.log(countriesName, 'countries name');
+    // console.log(selectedCountries, 'selected countries');
   }
+
+  // const highlightCountries = (countryName: string[]) => {
+  //   for (const )
+  //   setSelectedCountries()
+  // }
+
+
+
+  
 
   return (
     <WorldMapContext.Provider value={{

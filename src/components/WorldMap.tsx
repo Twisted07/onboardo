@@ -3,7 +3,7 @@ import { GenericTemplate } from '../utils/generic';
 
 import cn from 'classnames';
 
-function WorldMapView({ validCountries }: { validCountries: string[] }) {
+function WorldMapView({ validCountries, colorPalette, countryData, isFilter, filterValue }: { validCountries: string[], colorPalette: object, countryData: object, isFilter: boolean, filterValue: string }) {
   // get the data from context 
   // console.log('world map : ', worldmap);
   return (
@@ -19,14 +19,39 @@ function WorldMapView({ validCountries }: { validCountries: string[] }) {
         viewBox="30.767 241.591 784.077 458.627"
         id="world-map"
       >
-        {
+        { !isFilter ?
           worldmap.map(mapData => (
             <GenericTemplate
               key={mapData.id}
               {...mapData}
-              className={cn(`hover:fill-slate-500`, { 'fill-red-500': validCountries.includes(mapData.id) })}
+              // className={cn(`hover:fill-slate-500`,
+              //             {'fill-yellow-500': validCountries.includes(mapData.id)})}
+              style={countryData['visaFree']?.includes(mapData.id) ? {fill : colorPalette['visaFreeColor']}
+                      : countryData['visaOnArrival']?.includes(mapData.id) ? {fill : colorPalette['visaOnArrivalColor']}
+                      : countryData['eta']?.includes(mapData.id) ? {fill : colorPalette['etaColor']}
+                      : countryData['visaOnline']?.includes(mapData.id) ? {fill : colorPalette['visaOnlineColor']}
+                      : countryData['visaRequired']?.includes(mapData.id) ? {fill : colorPalette['visaRequiredColor']}
+                      : null 
+                    }
+              // className={cn(`hover:fill-slate-500`,  countryData['visaFree'] : )}
             />
+            
           ))
+          : worldmap.map(mapData => (
+            <GenericTemplate
+              key={mapData.id}
+              {...mapData}
+              // className={cn(`hover:fill-slate-500`,
+              //             {'fill-yellow-500': validCountries.includes(mapData.id)})}
+              style={countryData[filterValue]?.includes(mapData.id) ? {fill : colorPalette['visaFreeColor']}
+                      : countryData[filterValue]?.includes(mapData.id) ? {fill : colorPalette['visaOnArrivalColor']}
+                      : countryData[filterValue]?.includes(mapData.id) ? {fill : colorPalette['etaColor']}
+                      : countryData[filterValue]?.includes(mapData.id) ? {fill : colorPalette['visaOnlineColor']}
+                      : countryData[filterValue]?.includes(mapData.id) ? {fill : colorPalette['visaRequiredColor']}
+                      : null 
+                    }
+              // className={cn(`hover:fill-slate-500`,  countryData['visaFree'] : )}
+            />))
         }
       </svg>
     </div>
