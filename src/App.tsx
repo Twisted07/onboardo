@@ -6,13 +6,22 @@ import { WorldMapContext } from './contexts/WorldMapProvider';
 
 
 function App() {
+  // * STATES
   const [countriesObj, setCountriesObj] = useState<object | any>({});
   const [countryInput, setCountryInput] = useState<string>('');
   const [colorPalette, setColorPalette] = useState<object>({});
-  const { highlightCountries, selectedCountries } = useContext(WorldMapContext);
+  const { highlightCountries } = useContext<any>(WorldMapContext);
   const [isFiltering, setIsFiltering] = useState<boolean>(false);
+  const [filterValue, setFilterValue] = useState<string>('visaFree');
+  
+  // * VARIABLES
+  const filterValues = [
+    "visaFree", "visaOnArrival", "eta", "visaOnline", "visaRequired"
+  ];
 
 
+
+  // * FUNCTIONS
   function processAvailability(countryName: string) {
     // takes in a country name / ios , returns all the coun `try where it can travel 
     // visa free 
@@ -33,59 +42,42 @@ function App() {
     }  
     
     let newObj = []
-    // TODO: We need to access the ngData as an unknown json file.
   
     for (const country in worldData) {
       if (country !== countryName) return;
+
       for (const visaCategory in worldData[country]) {        
-        newObj = [...newObj, [visaCategory, Object.fromEntries([["countries", worldData[country][visaCategory]], ["color", visaCategoryColors[visaCategory]]])]];
-        
+        newObj = [...newObj, [visaCategory, Object.fromEntries([["countries", worldData[country][visaCategory]], ["color", visaCategoryColors[visaCategory]]])]];  
       }
       
       return Object.fromEntries(newObj);
     }
+
   }
 
-
-  
 
   function _handleCountryProcessing() {
     // console.log('processing country ', countryInput);
     const availableCountries = processAvailability(countryInput);
     setIsFiltering(false);
-    // setCountriesObj(availableCountries);
-
-    // console.log('availableCountries -- ', availableCountries);
-    // console.log(countriesObj, 'countries obj');
-    
-    // console.log(availableCountries['visa-free']['countries'])
-    // highlightCountries(availableCountries['visa-free']['countries'].map(data => data['iso'].toLowerCase()));
-
-    // ? I want this function to highlight the countries in different colour. This means it has to be sent out as an object then destructured in the worldmap section
-    // ! THIS NEEDS SIMPLIFICATION
 
     for (const visaCategory in availableCountries) {
-      highlightCountries(availableCountries[visaCategory]['countries'].map(data => data['iso'].toLowerCase()));
+      highlightCountries(availableCountries[visaCategory]['countries'].map(data =>  data['iso'].toLowerCase()));
     }
+
+    if (!availableCountries) {
+      console.error('available countries error');
+      setCountriesObj({});
+      setColorPalette({});
+      return;
+    }
+
     const visaFreeColor = availableCountries['visa-free']['color'];
     const visaOnArrivalColor = availableCountries['visa-on-arrival']['color'];
     const etaColor = availableCountries['electronic-travel-authorization']['color'];
     const visaOnlineColor = availableCountries['visa-online']['color'];
     const visaRequiredColor = availableCountries['visa-required']['color'];
 
-    // const visaFree = highlightCountries(availableCountries['visa-free']['countries'].map(data => data['iso'].toLowerCase()));
-
-    // const visaOnArrival = highlightCountries(availableCountries['visa-on-arrival']['countries'].map(data => data['iso'].toLowerCase()));
-
-    // const eta = highlightCountries(availableCountries['electronic-travel-authorization']['countries'].map(data => data['iso'].toLowerCase()));
-
-    // const visaOnline = highlightCountries(availableCountries['visa-online']['countries'].map(data => data['iso'].toLowerCase()));
-
-    // const visaRequired = highlightCountries(availableCountries['visa-required']['countries'].map(data => data['iso'].toLowerCase()));
-
-    // console.log(visaFree, 'visaFree')
-
-    
     const colorData = {
       visaFreeColor: visaFreeColor,
       visaOnArrivalColor: visaOnArrivalColor,
@@ -107,17 +99,20 @@ function App() {
 
   }
 
-  function _handleSingleCat() {
+
+  function _handleCategoryFiltering(value : string) {
+    setFilterValue(value);
     setIsFiltering(true);
     highlightCountries([]);
-    highlightCountries(countriesObj['visaFree']);
+    console.log(filterValue);
+    highlightCountries((countriesObj[filterValue]));
   }
 
 
 
   return (
     <div className="flex justify-center h-screen border border-black p-16 m-16">
-      <WorldMapView validCountries={selectedCountries} colorPalette={colorPalette} countryData={countriesObj} isFilter={isFiltering} filterValue='visaFree' />
+      <WorldMapView colorPalette={colorPalette} countryData={countriesObj} isFilter={isFiltering} filterValue={filterValue} />
       <div className="control-center">
         <input
           type="text"
@@ -131,12 +126,30 @@ function App() {
           onClick={_handleCountryProcessing}>Check</button>
         <p>You are searching for {countryInput}</p>
 
-        <button
-          className='bg-red-500 p-2 text-white'
-          onClick={_handleSingleCat}>Visa Free</button>
+        {
+          filterValues?.map(filter => (
+            <FilterBtn key={filter} btnValue={filter} onFilter={() => _handleCategoryFiltering(filter)}>{filter}</FilterBtn>
+          ))
+        }
+
       </div>
     </div>
   )
 }
+
+
+
+function FilterBtn({btnValue, onFilter, children} : {btnValue : string, onFilter : any, children : string}) {
+  return(
+    <button
+      className='bg-white border border-black rounded mb-2 p-2 text-black block'
+      onClick={onFilter}
+      value={btnValue}>
+      {children}
+    </button>
+  )
+}
+
+
 
 export default App

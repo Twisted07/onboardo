@@ -3,7 +3,7 @@ import { GenericTemplate } from '../utils/generic';
 
 import cn from 'classnames';
 
-function WorldMapView({ validCountries, colorPalette, countryData, isFilter, filterValue }: { validCountries: string[], colorPalette: object, countryData: object, isFilter: boolean, filterValue: string }) {
+function WorldMapView({ colorPalette, countryData, isFilter, filterValue }: { colorPalette: any, countryData: any, isFilter: boolean, filterValue: string }) {
   // get the data from context 
   // console.log('world map : ', worldmap);
   return (
@@ -43,11 +43,11 @@ function WorldMapView({ validCountries, colorPalette, countryData, isFilter, fil
               {...mapData}
               // className={cn(`hover:fill-slate-500`,
               //             {'fill-yellow-500': validCountries.includes(mapData.id)})}
-              style={countryData[filterValue]?.includes(mapData.id) ? {fill : colorPalette['visaFreeColor']}
-                      : countryData[filterValue]?.includes(mapData.id) ? {fill : colorPalette['visaOnArrivalColor']}
-                      : countryData[filterValue]?.includes(mapData.id) ? {fill : colorPalette['etaColor']}
-                      : countryData[filterValue]?.includes(mapData.id) ? {fill : colorPalette['visaOnlineColor']}
-                      : countryData[filterValue]?.includes(mapData.id) ? {fill : colorPalette['visaRequiredColor']}
+              style={countryData[filterValue]?.includes(mapData.id) && filterValue === 'visaFree' ? {fill : colorPalette['visaFreeColor']}
+                      : countryData[filterValue]?.includes(mapData.id) && filterValue === 'visaOnArrival' ? {fill : colorPalette['visaOnArrivalColor']}
+                      : countryData[filterValue]?.includes(mapData.id) && filterValue === 'eta' ? {fill : colorPalette['etaColor']}
+                      : countryData[filterValue]?.includes(mapData.id) && filterValue === 'visaOnline' ? {fill : colorPalette['visaOnlineColor']}
+                      : countryData[filterValue]?.includes(mapData.id) && filterValue === 'visaRequired' ? {fill : colorPalette['visaRequiredColor']}
                       : null 
                     }
               // className={cn(`hover:fill-slate-500`,  countryData['visaFree'] : )}
